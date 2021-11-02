@@ -2,7 +2,8 @@
 
 风纪委员自动投票
 
-![visitors](https://visitor-badge.glitch.me/badge?page_id=bilibiliJudgement)
+#### Visitors
+![](https://count.getloli.com/get/@RimuruChan-bilibiliJudgement?theme=rule34)
 ___
 
 ## 功能
