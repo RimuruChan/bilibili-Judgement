@@ -1,5 +1,7 @@
 # bilibili-Judgement
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a19c8c47ee9e438a8a86ead0b893848d)](https://app.codacy.com/gh/RimuruChan/bilibili-Judgement?utm_source=github.com&utm_medium=referral&utm_content=RimuruChan/bilibili-Judgement&utm_campaign=Badge_Grade_Settings)
+
 风纪委员自动投票
 
 ## Visitors
