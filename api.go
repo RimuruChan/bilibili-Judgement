@@ -1,15 +1,15 @@
 package main
 
-type ResData struct {
+type resData struct {
 	Code    int                    `json:"code"`
 	Message string                 `json:"message"`
-	Ttl     int                    `json:"ttl"`
+	TTL     int                    `json:"ttl"`
 	Data    map[string]interface{} `json:"data"`
 }
 
-const JuryUrl = "https://api.bilibili.com/x/credit/v2/jury/jury"
+const juryURL = "https://api.bilibili.com/x/credit/v2/jury/jury"
 
-type JuryInfo struct {
+type juryInfo struct {
 	Uname       string `json:"uname" mapstructure:"uname"`
 	Face        string `json:"face" mapstructure:"face"`
 	CaseTotal   int    `json:"case_total" mapstructure:"case_total"`
@@ -18,31 +18,31 @@ type JuryInfo struct {
 	ApplyStatus int    `json:"apply_status" mapstructure:"apply_status"`
 }
 
-const NextUrl = "https://api.bilibili.com/x/credit/v2/jury/case/next"
+const nextURL = "https://api.bilibili.com/x/credit/v2/jury/case/next"
 
-const InfoUrl = "https://api.bilibili.com/x/credit/v2/jury/case/info"
+const infoURL = "https://api.bilibili.com/x/credit/v2/jury/case/info"
 
-type CommentType int
+type commentType int
 
 const (
-	Comment = 1
-	Danmu   = 4
+	comment = 1
+	danmu   = 4
 )
 
-func (c CommentType) String() string {
+func (c commentType) String() string {
 	switch c {
-	case Comment:
+	case comment:
 		return "Comment"
-	case Danmu:
+	case danmu:
 		return "Danmu"
 	default:
 		return "Undefined"
 	}
 }
 
-type CaseInfo struct {
-	CaseId    string      `json:"case_id" mapstructure:"case_id"`
-	CaseType  CommentType `json:"case_type" mapstructure:"case_type"`
+type caseInfo struct {
+	CaseID    string      `json:"case_id" mapstructure:"case_id"`
+	CaseType  commentType `json:"case_type" mapstructure:"case_type"`
 	VoteItems []struct {
 		Vote     int    `json:"vote" mapstructure:"vote"`
 		VoteText string `json:"vote_text" mapstructure:"vote_text"`
@@ -63,9 +63,9 @@ type CaseInfo struct {
 	} `json:"case_info" mapstructure:"case_info"`
 }
 
-const OpinionUrl = "https://api.bilibili.com/x/credit/v2/jury/case/opinion"
+const opinionURL = "https://api.bilibili.com/x/credit/v2/jury/case/opinion"
 
-type Opinion struct {
+type opinion struct {
 	Total int `json:"total" mapstructure:"total"`
 	List  []struct {
 		Opid       int    `json:"opid" mapstructure:"opid"`
@@ -83,4 +83,4 @@ type Opinion struct {
 	} `json:"list" mapstructure:"list"`
 }
 
-const VoteUrl = "https://api.bilibili.com/x/credit/v2/jury/vote"
+const voteURL = "https://api.bilibili.com/x/credit/v2/jury/vote"

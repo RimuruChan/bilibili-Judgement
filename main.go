@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Version of Program
 const Version = "1.0"
 
 var sessdata string
@@ -50,11 +51,11 @@ func main() {
 	for {
 		logger.Info("fetching next case...")
 		split()
-		caseId, err := getNext()
+		caseID, err := getNext()
 		if err != nil {
 			logger.Fatal("failed to fetch next case:", err.Error())
 		}
-		caseInfo, err := getCaseInfo(caseId)
+		caseInfo, err := getCaseInfo(caseID)
 		if err != nil {
 			logger.Fatal("failed to fetch case info:", err.Error())
 		}
@@ -63,12 +64,12 @@ func main() {
 			voteItem[item.Vote] = item.VoteText
 		}
 
-		logger.Info("CaseId:\t", caseId)
+		logger.Info("CaseID:\t", caseID)
 		logger.Info("CaseType:\t", caseInfo.CaseType)
 		split()
 		logger.Info("fetching opinions...")
 		split()
-		opinion, err := getOpinion(caseId, 1, 20)
+		opinion, err := getOpinion(caseID, 1, 20)
 		if err != nil {
 			logger.Fatal("failed to fetch opinions:", err.Error())
 		}
@@ -89,14 +90,14 @@ func main() {
 		logger.Info("VoteText:\t", voteItem[maxKey])
 		split()
 		logger.Info("claiming case...")
-		_, err = postVote(caseId, 0)
+		_, err = postVote(caseID, 0)
 		if err != nil {
 			logger.Fatal("failed to claim case:", err.Error())
 		}
 		logger.Info("claim succeeded. sleeping for 10s...")
 		time.Sleep(10 * time.Second)
 		logger.Info("voting ...")
-		_, err = postVote(caseId, maxKey)
+		_, err = postVote(caseID, maxKey)
 		if err != nil {
 			logger.Fatal("failed to vote:", err.Error())
 		}

@@ -2,8 +2,9 @@
 
 风纪委员自动投票
 
-#### Visitors
-![](https://count.getloli.com/get/@RimuruChan-bilibiliJudgement?theme=rule34)
+## Visitors
+
+![Visitors](https://count.getloli.com/get/@RimuruChan-bilibiliJudgement?theme=rule34)
 ___
 
 ## 功能

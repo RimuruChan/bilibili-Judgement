@@ -9,21 +9,21 @@ import (
 	"strconv"
 )
 
-func getJuryInfo() (JuryInfo, error) {
-	resData, err := request("GET", JuryUrl, make(map[string]string))
+func getJuryInfo() (juryInfo, error) {
+	resData, err := request("GET", juryURL, make(map[string]string))
 	if err != nil {
-		return JuryInfo{}, err
+		return juryInfo{}, err
 	}
-	var juryInfo JuryInfo
-	err = mapstructure.Decode(resData.Data, &juryInfo)
+	var ji juryInfo
+	err = mapstructure.Decode(resData.Data, &ji)
 	if err != nil {
-		return JuryInfo{}, err
+		return juryInfo{}, err
 	}
-	return juryInfo, nil
+	return ji, nil
 }
 
 func getNext() (string, error) {
-	resData, err := request("GET", NextUrl, make(map[string]string))
+	resData, err := request("GET", nextURL, make(map[string]string))
 	if err != nil {
 		return "", err
 	}
@@ -36,40 +36,40 @@ func getNext() (string, error) {
 	}
 }
 
-func getCaseInfo(caseId string) (CaseInfo, error) {
-	resData, err := request("GET", InfoUrl, map[string]string{
+func getCaseInfo(caseId string) (caseInfo, error) {
+	resData, err := request("GET", infoURL, map[string]string{
 		"case_id": caseId,
 	})
 	if err != nil {
-		return CaseInfo{}, err
+		return caseInfo{}, err
 	}
-	var caseInfo CaseInfo
-	err = mapstructure.Decode(resData.Data, &caseInfo)
+	var ci caseInfo
+	err = mapstructure.Decode(resData.Data, &ci)
 	if err != nil {
-		return CaseInfo{}, err
+		return caseInfo{}, err
 	}
-	return caseInfo, nil
+	return ci, nil
 }
 
-func getOpinion(caseId string, pg int, ps int) (Opinion, error) {
-	resData, err := request("GET", OpinionUrl, map[string]string{
+func getOpinion(caseId string, pg int, ps int) (opinion, error) {
+	resData, err := request("GET", opinionURL, map[string]string{
 		"case_id": caseId,
 		"pg":      strconv.Itoa(pg),
 		"ps":      strconv.Itoa(ps),
 	})
 	if err != nil {
-		return Opinion{}, err
+		return opinion{}, err
 	}
-	var opinion Opinion
-	err = mapstructure.Decode(resData.Data, &opinion)
+	var o opinion
+	err = mapstructure.Decode(resData.Data, &o)
 	if err != nil {
-		return Opinion{}, err
+		return opinion{}, err
 	}
-	return opinion, nil
+	return o, nil
 }
 
-func postVote(caseId string, vote int) (ResData, error) {
-	return request("POST", VoteUrl, map[string]string{
+func postVote(caseId string, vote int) (resData, error) {
+	return request("POST", voteURL, map[string]string{
 		"case_id":   caseId,
 		"vote":      strconv.Itoa(vote),
 		"content":   "",
@@ -78,10 +78,10 @@ func postVote(caseId string, vote int) (ResData, error) {
 	})
 }
 
-func request(method string, api string, param map[string]string) (ResData, error) {
+func request(method string, api string, param map[string]string) (resData, error) {
 	req, err := http.NewRequest(method, api, nil)
 	if err != nil {
-		return ResData{}, err
+		return resData{}, err
 	}
 	query := req.URL.Query()
 	for k, v := range param {
@@ -92,21 +92,21 @@ func request(method string, api string, param map[string]string) (ResData, error
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return ResData{}, err
+		return resData{}, err
 	}
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return ResData{}, err
+		return resData{}, err
 	}
-	var resData ResData
-	err = json.Unmarshal(bytes, &resData)
+	var rd resData
+	err = json.Unmarshal(bytes, &rd)
 	if err != nil {
-		return ResData{}, err
+		return resData{}, err
 	}
-	if resData.Code != 0 {
-		return ResData{}, errors.New("return code is not 0: " + resData.Message)
+	if rd.Code != 0 {
+		return resData{}, errors.New("return code is not 0: " + rd.Message)
 	}
-	return resData, nil
+	return rd, nil
 }
 
 func addHeader(header *http.Header) {
