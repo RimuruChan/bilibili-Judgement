@@ -1,40 +1,47 @@
 package main
 
-type resData struct {
+type ResData struct {
 	Code    int                    `json:"code"`
 	Message string                 `json:"message"`
 	TTL     int                    `json:"ttl"`
 	Data    map[string]interface{} `json:"data"`
 }
 
-const juryURL = "https://api.bilibili.com/x/credit/v2/jury/jury"
+const JuryURL = "https://api.bilibili.com/x/credit/v2/jury/jury"
 
-type juryInfo struct {
+type JuryInfo struct {
 	Uname       string `json:"uname" mapstructure:"uname"`
 	Face        string `json:"face" mapstructure:"face"`
 	CaseTotal   int    `json:"case_total" mapstructure:"case_total"`
 	TermEnd     int    `json:"term_end" mapstructure:"term_end"`
 	Status      int    `json:"status" mapstructure:"status"`
+	ErrMsg      string `json:"err_msg" mapstructure:"err_msg"`
 	ApplyStatus int    `json:"apply_status" mapstructure:"apply_status"`
 }
 
-const nextURL = "https://api.bilibili.com/x/credit/v2/jury/case/next"
+const NextURL = "https://api.bilibili.com/x/credit/v2/jury/case/next"
 
-const infoURL = "https://api.bilibili.com/x/credit/v2/jury/case/info"
+const InfoURL = "https://api.bilibili.com/x/credit/v2/jury/case/info"
 
-type commentType int
+type CommentType int
 
 const (
-	comment = 1
-	danmu   = 4
+	SingleComment   = 1
+	MultipleComment = 2
+	SingleDanmu     = 3
+	MultipleDanmu   = 4
 )
 
-func (c commentType) String() string {
+func (c CommentType) String() string {
 	switch c {
-	case comment:
-		return "Comment"
-	case danmu:
-		return "Danmu"
+	case SingleComment:
+		return "SingleComment"
+	case MultipleComment:
+		return "MultipleComment"
+	case SingleDanmu:
+		return "SingleDanmu"
+	case MultipleDanmu:
+		return "MultipleDanmu"
 	default:
 		return "Undefined"
 	}
@@ -42,7 +49,7 @@ func (c commentType) String() string {
 
 type caseInfo struct {
 	CaseID    string      `json:"case_id" mapstructure:"case_id"`
-	CaseType  commentType `json:"case_type" mapstructure:"case_type"`
+	CaseType  CommentType `json:"case_type" mapstructure:"case_type"`
 	VoteItems []struct {
 		Vote     int    `json:"vote" mapstructure:"vote"`
 		VoteText string `json:"vote_text" mapstructure:"vote_text"`
@@ -55,6 +62,7 @@ type caseInfo struct {
 	VoteCd      int `json:"vote_cd" mapstructure:"vote_cd"`
 	CaseInfo    struct {
 		Comment struct {
+			Mid     int    `json:"mid" mapstructure:"mid"`
 			Uname   string `json:"uname" mapstructure:"uname"`
 			Face    string `json:"face" mapstructure:"face"`
 			Content string `json:"content" mapstructure:"content"`
@@ -80,6 +88,7 @@ type opinion struct {
 		Hate       int    `json:"hate" mapstructure:"hate"`
 		LikeStatus int    `json:"like_status" mapstructure:"like_status"`
 		VoteTime   int    `json:"vote_time" mapstructure:"vote_time"`
+		Insiders   int    `json:"insiders" mapstructure:"insiders"`
 	} `json:"list" mapstructure:"list"`
 }
 

@@ -4,26 +4,28 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/mitchellh/mapstructure"
-	"io/ioutil"
+	"io"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 )
 
-func getJuryInfo() (juryInfo, error) {
-	resData, err := request("GET", juryURL, make(map[string]string))
+func getJuryInfo() (JuryInfo, error) {
+	resData, err := request("GET", JuryURL, make(map[string]string))
 	if err != nil {
-		return juryInfo{}, err
+		return JuryInfo{}, err
 	}
-	var ji juryInfo
+	var ji JuryInfo
 	err = mapstructure.Decode(resData.Data, &ji)
 	if err != nil {
-		return juryInfo{}, err
+		return JuryInfo{}, err
 	}
 	return ji, nil
 }
 
 func getNext() (string, error) {
-	resData, err := request("GET", nextURL, make(map[string]string))
+	resData, err := request("GET", NextURL, make(map[string]string))
 	if err != nil {
 		return "", err
 	}
@@ -37,7 +39,7 @@ func getNext() (string, error) {
 }
 
 func getCaseInfo(caseId string) (caseInfo, error) {
-	resData, err := request("GET", infoURL, map[string]string{
+	resData, err := request("GET", InfoURL, map[string]string{
 		"case_id": caseId,
 	})
 	if err != nil {
@@ -49,6 +51,23 @@ func getCaseInfo(caseId string) (caseInfo, error) {
 		return caseInfo{}, err
 	}
 	return ci, nil
+}
+
+func getFullOpinion(caseId string) opinion {
+	opinion, err := getOpinion(caseId, 1, 20)
+	if err != nil {
+		logger.Fatal("failed to fetch opinions:", err.Error())
+	}
+	pg := 2
+	for len(opinion.List) < opinion.Total {
+		nextPageOpinion, err := getOpinion(caseId, pg, 20)
+		if err != nil {
+			logger.Fatal("failed to fetch opinions:", err.Error())
+		}
+		opinion.List = append(opinion.List, nextPageOpinion.List...)
+		pg++
+	}
+	return opinion
 }
 
 func getOpinion(caseId string, pg int, ps int) (opinion, error) {
@@ -68,20 +87,23 @@ func getOpinion(caseId string, pg int, ps int) (opinion, error) {
 	return o, nil
 }
 
-func postVote(caseId string, vote int) (resData, error) {
+func postVote(caseId string, vote int) (ResData, error) {
+	rand.Seed(time.Now().UnixNano())
+	insiders := strconv.Itoa(rand.Intn(2))
 	return request("POST", voteURL, map[string]string{
 		"case_id":   caseId,
 		"vote":      strconv.Itoa(vote),
+		"insiders":  insiders,
 		"content":   "",
 		"anonymous": "1",
 		"csrf":      csrf,
 	})
 }
 
-func request(method string, api string, param map[string]string) (resData, error) {
+func request(method string, api string, param map[string]string) (ResData, error) {
 	req, err := http.NewRequest(method, api, nil)
 	if err != nil {
-		return resData{}, err
+		return ResData{}, err
 	}
 	query := req.URL.Query()
 	for k, v := range param {
@@ -92,19 +114,20 @@ func request(method string, api string, param map[string]string) (resData, error
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return resData{}, err
+		return ResData{}, err
 	}
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return resData{}, err
+		return ResData{}, err
 	}
-	var rd resData
+	logger.Debug(string(bytes))
+	var rd ResData
 	err = json.Unmarshal(bytes, &rd)
 	if err != nil {
-		return resData{}, err
+		return ResData{}, err
 	}
 	if rd.Code != 0 {
-		return resData{}, errors.New("return code is not 0: " + rd.Message)
+		return ResData{}, errors.New("return code is not 0: " + rd.Message)
 	}
 	return rd, nil
 }
